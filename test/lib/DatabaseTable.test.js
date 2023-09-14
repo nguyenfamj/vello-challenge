@@ -2,13 +2,12 @@ import test, { describe } from 'node:test';
 import assert from 'node:assert';
 import DatabaseTable from '../../src/lib/DatabaseTable.js';
 
-const db = DatabaseTable.getInstance('person', {});
+const db = DatabaseTable.getInstance('person', []);
 
 describe('Database', () => {
   describe('CRUD operations on person table', () => {
-
     let id = null;
-  
+
     test('Create person', (t) => {
       const person = db.putDocument({
         name: 'test name',
@@ -16,7 +15,7 @@ describe('Database', () => {
         city: 'Helsinki',
         age: 55,
       });
-    
+
       assert.equal(person.name, 'test name');
       assert.equal(person.address, 'testkatu 55');
       assert.equal(person.city, 'Helsinki');
@@ -25,10 +24,10 @@ describe('Database', () => {
 
       id = person.id;
     });
-    
+
     test('Test retrieving from database', (t) => {
       const person = db.getDocument(id);
-    
+
       assert.equal(person.name, 'test name');
       assert.equal(person.address, 'testkatu 55');
       assert.equal(person.city, 'Helsinki');
@@ -37,7 +36,6 @@ describe('Database', () => {
     });
 
     test('Test updating a document', (t) => {
-
       const status = db.updateDocument(id, {
         address: 'testtie 123',
         city: 'Tampere',
@@ -46,7 +44,7 @@ describe('Database', () => {
       assert.equal(status, true);
 
       const person = db.getDocument(id);
-    
+
       assert.equal(person.name, 'test name');
       assert.equal(person.address, 'testtie 123');
       assert.equal(person.city, 'Tampere');
@@ -58,9 +56,9 @@ describe('Database', () => {
       const index = db.indexDocuments();
 
       assert.equal(index.length, 1);
-      
+
       const person = index[0];
-    
+
       assert.equal(person.name, 'test name');
       assert.equal(person.address, 'testtie 123');
       assert.equal(person.city, 'Tampere');
@@ -77,6 +75,5 @@ describe('Database', () => {
 
       assert.equal(person, null);
     });
-
   });
 });
