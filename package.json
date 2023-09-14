@@ -3,14 +3,20 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "db:import": "node src/import_data.js",
     "test": "node --test",
     "start": "node ./src/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "papaparse": "^5.4.1"
   },
-  "type": "module"
+  "type": "module",
+  "volta": {
+    "node": "18.17.0"
+  }
 }
