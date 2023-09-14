@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { getCurrentHighestIndex } from '../utils/dbUtils.js';
 
 const _tables = {};
 
@@ -34,53 +35,117 @@ export default class DatabaseTable {
 
   /**
    * Add document to table.
-   * 
-   * @param {document} document 
+   *
+   * @param {document} document
    * @returns {document} the created document, including a new unique ID
    */
   putDocument(document) {
-    throw new Error('Not implemented');
+    const fileDir = `${process.cwd()}/data/${this.name}.json`;
+    document['id'] = getCurrentHighestIndex(this.data) + 1;
+
+    this.data.push(document);
+    // Write the updated JSON data back to the file
+    fs.writeFileSync(fileDir, JSON.stringify(this.data, null, 2), (err) => {
+      if (err) {
+        console.error('Error writing to the file:', err);
+        return;
+      }
+      console.log('New record added successfully!');
+    });
+
+    return document;
   }
 
   /**
    * Get selected document.
-   * 
-   * @param {number} id 
-   * @returns {document | null} document or null if not found 
+   *
+   * @param {number} id
+   * @returns {document | null} document or null if not found
    */
   getDocument(id) {
-    throw new Error('Not implemented');
+    const results = this.data.filter((item) => item['id'] === id);
+    if (results.length === 0) {
+      return null;
+    }
+
+    if (results.length > 1) {
+      console.log(`There are more than 1 record with id ${id}, return the first found record`);
+    }
+
+    return results[0];
   }
 
   /**
    * Update selected document.
-   * 
-   * @param {number} id 
-   * @param {*} document 
+   *
+   * @param {number} id
+   * @param {*} document
    * @returns {boolean} whether the operation succeeded
    */
   updateDocument(id, document) {
-    throw new Error('Not implemented');
+    const fileDir = `${process.cwd()}/data/${this.name}.json`;
+    const updateIndex = this.data.findIndex((item) => item['id'] === id);
+    console.log(updateIndex);
+
+    this.data[updateIndex] = { ...this.data[updateIndex], ...document };
+
+    console.log(this.data[updateIndex]);
+
+    try {
+      // Write the updated JSON data back to the file
+      fs.writeFileSync(fileDir, JSON.stringify(this.data, null, 2), (err) => {
+        if (err) {
+          throw new Error(`Cannot write to the file: ${err}`);
+        }
+        console.log('Record updated successfully!');
+      });
+
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   }
 
   /**
    * Delete selected document.
-   * 
-   * @param {number} id 
+   *
+   * @param {number} id
    * @returns {boolean} whether the operation succeeded
    */
   deleteDocument(id) {
-    throw new Error('Not implemented');
+    const fileDir = `${process.cwd()}/data/${this.name}.json`;
+    for (let i = this.data.length - 1; i >= 0; i--) {
+      if (this.data[i].id === id) {
+        this.data.splice(i, 1);
+        break;
+      }
+    }
+
+    try {
+      // Write the updated JSON data back to the file
+      fs.writeFileSync(fileDir, JSON.stringify(this.data, null, 2), (err) => {
+        if (err) {
+          throw new Error(`Cannot write to the file: ${err}`);
+        }
+        console.log('Record delete successfully!');
+      });
+
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   }
 
   /**
    * Get documents based on limit and offset.
-   * 
-   * @param {number} limit 
-   * @param {number} offsetId 
+   *
+   * @param {number} limit
+   * @param {number} offsetId
    * @returns {document[]}
    */
-  indexDocuments(limit, offsetId) {
-    throw new Error('Not implemented');
+  indexDocuments(limit = 10, offsetId = 0) {
+    return this.data.slice(offsetId, offsetId + limit);
   }
 }
