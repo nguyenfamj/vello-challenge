@@ -85,11 +85,8 @@ export default class DatabaseTable {
   updateDocument(id, document) {
     const fileDir = `${process.cwd()}/data/${this.name}.json`;
     const updateIndex = this.data.findIndex((item) => item['id'] === id);
-    console.log(updateIndex);
 
     this.data[updateIndex] = { ...this.data[updateIndex], ...document };
-
-    console.log(this.data[updateIndex]);
 
     try {
       // Write the updated JSON data back to the file
@@ -145,7 +142,7 @@ export default class DatabaseTable {
    * @param {number} offsetId
    * @returns {document[]}
    */
-  indexDocuments(limit = 10, offsetId = 0) {
+  indexDocuments(limit = 50, offsetId = 0) {
     return this.data.slice(offsetId, offsetId + limit);
   }
 }

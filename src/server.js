@@ -9,6 +9,7 @@ const routes = [
 ];
 
 const app = express();
+app.use(express.json());
 
 for (const { name, router } of routes) {
   app.use(name, router);
